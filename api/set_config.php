@@ -5,7 +5,11 @@ $path2 = "../config/cache.json";
 $data = json_decode(file_get_contents("php://input"));
 
 if(!file_exists($path)) {
-	fopen($path, "w");
+	@$create_config = fopen($path, "w");
+	if(!$create_config) {
+		echo json_encode(array("message" => "Failed to create config.json. Is the config directory writable?", "error" => true));
+		exit(0);
+	}
 }	
 $config = json_decode(file_get_contents($path));
 
@@ -33,6 +37,9 @@ if(password_verify($password, $config->password) && $username == $config->userna
 	}
 	
     save_config();
+    exit(0);
+} else if($password === "" && $username === "") {
+    echo json_encode(array("error" => false, "message" => "Provide login info.", "password" => true));
     exit(0);
 } else {
     echo json_encode(array("error" => true, "message" => "Password and username combination not accepted.", "password" => true));

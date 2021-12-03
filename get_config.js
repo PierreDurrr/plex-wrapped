@@ -11,12 +11,16 @@ function get_config_initial() {
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             var result = JSON.parse(this.responseText);
-            if(result.password) {
-                login_menu();
+            if(result.error) { 
+                alert(result.message);
             } else {
-                first_time = true;
+                if(result.password) {
+                    login_menu();
+                } else {
+                    first_time = true;
 
-                set_password();
+                    set_password();
+                }
             }
         }
     };

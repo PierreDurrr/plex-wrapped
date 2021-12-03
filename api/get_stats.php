@@ -3,7 +3,11 @@ $data = json_decode(file_get_contents("php://input"));
 
 $path = "../config/config.json";
 if(!file_exists($path)) {
-	fopen($path, "w");
+	@$create_config = fopen($path, "w");
+	if(!$create_config) {
+		echo json_encode(array("message" => "Failed to create config.json. Is the config directory writable?", "error" => true));
+		exit(0);
+	}
 }	
 $config = json_decode(file_get_contents("../config/config.json"));
 

@@ -71,12 +71,12 @@ function login_menu() {
     var html = '<form id="password_login_form" onsubmit="get_config();return false">'
 
     html += '<div class="form-group">';
-    html += '<label for="username" title="The username chosen during first-time setup.">Username</label>';
-    html += '<input type="text" class="form-control" id="username" value="" minlength=4 autocomplete="on" required />';
+    html += '<label for="username" title="The username chosen during first-time setup.">Username:</label>';
+    html += '<input type="text" class="form-control" id="username" value="" placeholder="" minlength=4 autocomplete="on" required />';
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="password" title="The password chosen during first-time setup.">Password</label>';
+    html += '<label for="password" title="The password chosen during first-time setup.">Password:</label>';
     html += '<input type="password" class="form-control" id="password" value="" autocomplete="off" required />';
     html += '</div>';
 
@@ -93,18 +93,18 @@ function set_password(back) {
     var html = '<form id="password_form" onsubmit="set_tautulli(false);return false">'
 
     html += '<div class="form-group">';
-    html += '<label for="username" title="The username needed to change the config-file remotely.">Set an admin username</label>';
-    html += '<input type="text" class="form-control" id="username" value="' + username + '" minlength=4 autocomplete="on" required />';
+    html += '<label for="username" title="The username needed to log in as administrator and change the config-file remotely.">Set an admin username:</label>';
+    html += '<input type="text" class="form-control" id="username" value="' + username + '" placeholder="" minlength=4 autocomplete="on" required />';
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="password" title="The password needed to change the config-file remotely.">Set an admin password</label>';
-    html += '<input type="password" class="form-control" id="password" value="' + password + '" autocomplete="off" required />';
+    html += '<label for="password" title="The password needed to change the config-file remotely.">Set an admin password:</label>';
+    html += '<input type="password" class="form-control" id="password" value="' + password + '" placeholder="" autocomplete="off" required />';
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="password_2" title="The password needed to change the config-file remotely.">Repeat the password</label>';
-    html += '<input type="password" class="form-control" id="password_2" value="' + password + '" autocomplete="off" required />';
+    html += '<label for="password_2" title="The password needed to change the config-file remotely.">Repeat the password:</label>';
+    html += '<input type="password" class="form-control" id="password_2" value="' + password + '" placeholder="" autocomplete="off" required />';
     html += '</div>';
 
     html += '<div class="form-group">';
@@ -138,37 +138,37 @@ function set_tautulli(back) {
     html += '<form id="tautulli_form" onsubmit="set_tautulli_details(false);return false">'
 
     html += '<div class="form-group">';
-    html += '<label for="tautulli_apikey" title="The API key needed to interact with Tautulli. Commonly found at Tautulli->Settings->Web Interface->API Key.">Tautulli API key</label>';
-    html += '<input type="text" class="form-control" id="tautulli_apikey" value="' + tautulli_apikey + '" autocomplete="off" required placeholder="l0NgWe1rDAp1K3y..." /><br>';
+    html += '<label for="tautulli_apikey" title="The API key is needed for Plex-Wrapped to interact with Tautulli. Commonly found at Tautulli->Settings->Web Interface->API Key.">Tautulli API key:</label>';
+    html += '<input type="text" class="form-control" id="tautulli_apikey" value="' + tautulli_apikey + '" autocomplete="off" required placeholder="" /><br>';
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="tautulli_ip" title="The IP address or domain that connects to Tautulli. No subfolders, as this is another setting, but subdomains can be defined.">IP or domain for Tautulli connection</label>';
-    html += '<input type="text" class="form-control" id="tautulli_ip" value="' + tautulli_ip + '" required placeholder="mycooldomain.plex" /><br>';
+    html += '<label for="tautulli_ip" title="The IP address or domain that connects to Tautulli. No subfolders, as this is another setting, but subdomains can be defined.">IP or domain for Tautulli connection:</label>';
+    html += '<input type="text" class="form-control" id="tautulli_ip" value="' + tautulli_ip + '" required placeholder="" /><br>';
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="tautulli_port" title="The port Tautulli uses for connections. Typically empty if a domain is used.">Port for Tautulli (optional)</label>';
-    html += '<input type="text" class="form-control" id="tautulli_port" value="' + tautulli_port + '" placeholder="8181" /><br>';
+    html += '<label for="tautulli_port" title="The port Tautulli uses for connections. Typically empty if a domain is used.">Port for Tautulli: (Optional)</label>';
+    html += '<input type="text" class="form-control" id="tautulli_port" value="' + tautulli_port + '" placeholder="" /><br>';
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="tautulli_length" title="The max amount of entries Tautulli responds with during API calls. Typically doesn\'t need to be changed, but if you have more than 5000 entries in a day, they won\'t be loaded.">Tautlli item length</label>';
-    html += '<input type="number" min="0" class="form-control" id="tautulli_length" value="' + tautulli_length + '" autocomplete="off" placeholder="5000" required /><br>';
+    html += '<label for="tautulli_length" title="The max amount of entries Tautulli responds with during API calls. Typically doesn\'t need to be changed, but if you have more than 5000 entries in a day, they won\'t be loaded.">Tautlli item length:</label>';
+    html += '<input type="number" min="0" class="form-control" id="tautulli_length" value="' + tautulli_length + '" autocomplete="off" placeholder="" required /><br>';
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="tautulli_root" title="Subfolder for Tautulli, no slashes needed at the beginning or end. It is the folder accessed after the main IP/domain. For example: tautulli.com/subfolder.">Root for Tautulli (optional)</label>';
-    html += '<input type="text" class="form-control" id="tautulli_root" value="' + tautulli_root + '" autocomplete="off" placeholder="tautulli"/><br>';
+    html += '<label for="tautulli_root" title="Subfolder for Tautulli, no slashes needed at the beginning or end. It is the folder accessed after the main IP/domain. For example: \'tautulli.com/subfolder\' would mean you enter \'subfolder\' here.">Root for Tautulli: (Optional)</label>';
+    html += '<input type="text" class="form-control" id="tautulli_root" value="' + tautulli_root + '" autocomplete="off" placeholder=""/><br>';
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="timezone" title="The timezone the data is located in.">Timezone <a href="https://www.php.net/manual/en/timezones.php" target="_blank">(List)</a></label>';
-    html += '<input type="text" class="form-control" id="timezone" value="' + timezone + '" autocomplete="off" placeholder="Europe/Oslo" required /><br>';
+    html += '<label for="timezone" title="The timezone the data is located in, like \'Europe/Oslo\'. Type it exactly as it is specified in the PHP documentation.">Timezone: <a href="https://www.php.net/manual/en/timezones.php" target="_blank">(List)</a></label>';
+    html += '<input type="text" class="form-control" id="timezone" value="' + timezone + '" autocomplete="off" placeholder="" required /><br>';
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="ssl" title="Enable if your connection uses HTTPS or HTTP.">Use HTTPS</label>';
+    html += '<label for="ssl" title="Enable if your connection uses HTTPS.">Use HTTPS:</label>';
     html += '<input type="checkbox" class="form-control" id="ssl" ';
     if(ssl) {
         html += 'checked="' + ssl + '" ';

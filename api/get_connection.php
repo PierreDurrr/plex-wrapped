@@ -1,6 +1,6 @@
 <?php
 $data = json_decode(file_get_contents("php://input"));
-$config = json_decode(file_get_contents("../config/config.json"));
+@$config = json_decode(file_get_contents("../config/config.json"));
 
 if(empty($data)) {
     echo json_encode(array("error" => true, "message" => "No input provided."));

@@ -133,11 +133,14 @@ function get_config_cache() {
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             var result = JSON.parse(this.responseText);
-            if(result.password) {
-                login_menu();
-            } else {
+            if(result.error) { 
                 alert(result.message);
-                window.location.href = "../admin";
+            } else {
+                if(result.password) {
+                    login_menu();
+                } else {
+                    alert(result.message);
+                }
             }
         }
     };
