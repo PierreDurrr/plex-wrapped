@@ -76,7 +76,7 @@ if($caching) {
     // Log activity
     $log->log_activity('get_stats.php', 'unknown', 'Starting caching mode.');
 
-    caching_mode();
+    caching_mode($cache_limit);
 
 }
 
@@ -417,8 +417,9 @@ function update_cache($result) {
     return True;
 }
 
-function caching_mode() {
+function caching_mode($cache_limit) {
     global $config;
+    global $log;
     $id = "Caching mode";
 
     // Log caching mode
