@@ -30,7 +30,15 @@ $password = htmlspecialchars($data->password);
 $username = htmlspecialchars($data->username);
 
 // Verify password and username combination
-if($config->verify_wrapped_admin($username, $password)) {
+if(!$config->is_configured()) {
+
+    // Log use
+	$log->log_activity('set_config.php', 'unknown', 'Not configured before, saving first-time configuration.');
+
+    // Call save function
+    save_config($data->data, $data->clear_cache);
+    
+} else if($config->verify_wrapped_admin($username, $password)) {
 	
 	// Log use
 	$log->log_activity('set_config.php', 'unknown', 'Admin login verified.');
@@ -39,15 +47,6 @@ if($config->verify_wrapped_admin($username, $password)) {
     save_config($data->data, $data->clear_cache);
 
 // If input was given, but is empty
-} else if($password === "" && $username === "") {
-
-	// Log use
-	$log->log_activity('set_config.php', 'unknown', 'Admin login input empty.');
-
-    echo json_encode(array("error" => false, "message" => "Provide login info.", "password" => true));
-    exit(0);
-
-// Wrong combination
 } else {
 
 	// Log use

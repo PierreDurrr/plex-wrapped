@@ -25,6 +25,7 @@ class Cache{
 
     public function clear_cache() {
         
+        // Try to open cache
         @$cache = fopen($this->path, "w");
 
         if(!$cache) {

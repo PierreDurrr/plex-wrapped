@@ -86,6 +86,10 @@ class Config{
         return password_verify($password, $this->password) && $username == $this->username;
     }
 
+    public function is_configured() {
+        return !empty(file_get_contents($this->path));
+    }
+
     public function save_config($data, $clear_cache) {
 
         // If clear cache is enabled, clear the cache
@@ -101,8 +105,13 @@ class Config{
         
         // Hash the new password if changed
         if($data->password !== "") {
-            $hash = password_hash($config_data->password, PASSWORD_DEFAULT);
+            $hash = password_hash($data->password, PASSWORD_DEFAULT);
             $this->password = $hash;
+        } 
+
+        // Save new username if it has changed
+        if($data->username !== "") {
+            $this->username = $data->username;
         } 
         
         // Assign new variables from recieved config
@@ -112,7 +121,6 @@ class Config{
         $this->tautulli_length = $data->tautulli_length;
         $this->tautulli_root = $data->tautulli_root;
         $this->ssl = $data->ssl;
-        $this->username = $data->username;
         $this->timezone = $data->timezone;
         $this->use_cache = $data->use_cache;
         $this->use_logs = $data->use_logs;

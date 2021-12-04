@@ -29,8 +29,17 @@ if(empty($data)) {
 $password = htmlspecialchars($data->password);
 $username = htmlspecialchars($data->username);
 
+// Check if confgiured
+if(!$config->is_configured()) {
+
+	// Log use
+	$log->log_activity('get_config.php', 'unknown', 'Plex-Wrapped is not configured.');
+
+    echo json_encode(array("error" => true, "message" => "Plex-Wrapped is not configured.", "password" => false, "data" => array()));
+    exit(0);
+
 // Verify password and username combination
-if($config->verify_wrapped_admin($username, $password)) {
+} else if($config->verify_wrapped_admin($username, $password)) {
 	
 	// Log use
 	$log->log_activity('get_config.php', 'unknown', 'Retrieved Plex-Wrapped configuraton.');
@@ -39,15 +48,6 @@ if($config->verify_wrapped_admin($username, $password)) {
     exit(0);
 
 // If input was given, but is empty
-} else if($password === "" && $username === "") {
-
-	// Log use
-	$log->log_activity('get_config.php', 'unknown', 'Admin login input empty.');
-
-    echo json_encode(array("error" => false, "message" => "Provide login info.", "password" => true));
-    exit(0);
-
-// Wrong combination
 } else {
 
 	// Log use

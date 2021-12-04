@@ -12,14 +12,12 @@ function get_config_initial() {
         if (this.readyState == 4 && this.status == 200) {
             var result = JSON.parse(this.responseText);
             if(result.error) { 
-                alert(result.message);
-            } else {
-                if(result.password) {
-                    login_menu();
-                } else {
+                if(!result.password) {
                     first_time = true;
 
                     set_password();
+                } else {
+                    login_menu();
                 }
             }
         }
