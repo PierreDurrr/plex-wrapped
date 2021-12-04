@@ -26,6 +26,7 @@ $apikey = htmlspecialchars($data->apikey);
 // Create URL
 $url = $url . '?apikey=' . $apikey . '&cmd=status';
 
+
 // Attempt to call Tautulli API
 try {
 
@@ -74,5 +75,4 @@ try {
     echo json_encode(array("message" => $e->getMessage(), "error" => true, "data" => array()));
     exit(0);
 }
-
 ?>

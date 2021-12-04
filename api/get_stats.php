@@ -1,37 +1,40 @@
 <?php
+// Required headers
+header("Access-Control-Allow-Origin: *");
+header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Max-Age: 3600");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
+// Files needed to use objects
+require(dirname(__FILE__) . '/objects/config.php');
+require(dirname(__FILE__) . '/objects/log.php');
+
+// Create variables
+$config = new Config();
+$log = new Log();
 $data = json_decode(file_get_contents("php://input"));
 
-$path = "../config/config.json";
-if(!file_exists($path)) {
-	@$create_config = fopen($path, "w");
-	if(!$create_config) {
-		echo json_encode(array("message" => "Failed to create config.json. Is the 'config' directory writable?", "error" => true));
-		exit(0);
-	}
-}	
-$config = json_decode(file_get_contents("../config/config.json"));
+// Check if configured
+if(!$config->is_configured()) {
 
-$arrContextOptions= [
-    'ssl' => [
-        'verify_peer'=> false,
-        'verify_peer_name'=> false,
-    ],
-];
+    // Log activity
+    $log->log_activity('get_stats.php', 'unknown', 'Tautulli connection test was successful.');
 
-//Check if the config is configured. If not, exit the API call.
-if (empty($config)) {
-    http_response_code(400);
-    echo json_encode(array("message" => "Plex Wrapped is not configured.", "error" => true));
+    echo json_encode(array("message" => "Plex-Wrapped is not confgured.", "error" => true));
     exit(0);
 }
 
 // Set time-zone to the one configured
 date_default_timezone_set($config->timezone);
 
-//Base-URL for connections to Tautulli API.
+// Set maximum run-time
+set_time_limit(240);
+
+// Base-URL for connections to Tautulli API.
 $connection = create_url();
 
-//Declare given inputs. GET and POST.
+// Declare given inputs. GET and POST.
 if(!empty($data)){
 	$p_identity = htmlspecialchars(trim($data->p_identity));
 } else if(isset($_GET["p_identity"])) {
@@ -59,60 +62,28 @@ if($caching) {
 		$cache_limit = htmlspecialchars(trim($_GET["cache_limit"]));
 	} else {
         http_response_code(400);
-		echo json_encode(array("message" => "Caching enabled. No 'cache_limit' input.", "error" => true));
+		echo json_encode(array("message" => "Caching enabled, but no 'cache_limit' input retrieved.", "error" => true));
 		exit(0);
 	}
 }
 
-// IF CACHING IS TRUE DO THIS
-if($caching) {
-	$id = "Caching mode";
-	log_activity($id, "Caching mode enabled");
-	
-	if(!$config->use_cache) {
-        http_response_code(400);
-		echo json_encode(array("message" => "Caching is disabled.", "error" => true));
-		exit(0);
-	}
-	
-	// Log checking cache
-	log_activity($id, "Starting cache loop");
-	
+// Variable to skip updating the cache
+$skip_refresh = false;
 
-	// Log checking cache
-	log_activity($id, "Checking data-cache");
+// Test Tautulli connection
+if(!tautulli_test_connection()) {
 
-	// GET WRAPPED DATES CACHE
-	if($config->use_cache) {
-		if($cache = check_cache()) {
-			$tautulli_data = $cache;
-		} else {
-			$tautulli_data = array();
-		}
-	} else {
-		$tautulli_data = array();
-	}
+    // Log activity
+    $log->log_activity('get_stats.php', 'unknown', 'Tautulli connection test was not successful.');
 
-	// Log refresh cache
-	log_activity($id, "Refreshing data-cache of missing/incomplete days, maximum " . $cache_limit . " days");
+    echo json_encode(array("message" => "Tautulli connection test was not successful.", "error" => true));
+    exit(0);
 
-	// REFRESH THE CACHE
-	$tautulli_data = tautulli_get_wrapped_dates($id, $tautulli_data, $cache_limit);
-	$complete_date_loop = $tautulli_data["complete"];
-	$tautulli_data = $tautulli_data["data"];
-	
-	// Log updating cache
-	log_activity($id, "Saving data-cache");
+} else {
 
-	// SAVE WRAPPED DATES CACHE
-	if($config->use_cache) {
-		update_cache($tautulli_data);
-	}
+    // Log activity
+    $log->log_activity('get_stats.php', 'unknown', 'Tautulli connection test was successful.');
 
-    http_response_code(200);
-	echo json_encode(array("message" => "Caching complete.", "caching_complete" => $complete_date_loop, "error" => False));
-	exit(0);
-	
 }
 
 // Get user ID
@@ -124,7 +95,7 @@ if (!$id) {
 }
 
 // Log user found
-log_activity($id, "User found");
+$log->log_activity('get_stats.php', $id, 'User found.');
 
 // Get user name
 $name = tautulli_get_name($id);
@@ -135,7 +106,7 @@ if(!$name) {
 }
 
 // Log checking cache
-log_activity($id, "Checking data-cache");
+$log->log_activity('get_stats.php', $id, 'Checking data-cache.');
 
 // GET WRAPPED DATES CACHE
 if($config->use_cache) {
@@ -148,23 +119,27 @@ if($config->use_cache) {
     $tautulli_data = array();
 }
 
-// Log refresh cache
-log_activity($id, "Refreshing data-cache of missing/incomplete days");
+if(!$skip_refresh) {
 
-// Refresh the cache
-$tautulli_data = tautulli_get_wrapped_dates($id, $tautulli_data, False);
-$tautulli_data = $tautulli_data["data"];
+    // Log refresh cache
+    $log->log_activity('get_stats.php', $id, 'Refreshing data-cache of missing/incomplete days');
 
-// Log updating cache
-log_activity($id, "Saving data-cache");
+    // Refresh the cache
+    $tautulli_data = tautulli_get_wrapped_dates($id, $tautulli_data, False);
+    $tautulli_data = $tautulli_data["data"];
 
-// Save the wrapped cache date
-if($config->use_cache) {
-    update_cache($tautulli_data);
+    // Log updating cache
+    $log->log_activity('get_stats.php', $id, 'Saving data-cache');
+
+    // Save the wrapped cache date
+    if($config->use_cache) {
+        update_cache($tautulli_data);
+    }
+
 }
 
 // Log wrapped create
-log_activity($id, "Creating wrapped data");
+$log->log_activity('get_stats.php', $id, 'Creating wrapped data');
 
 // Get stats based on configured options.
 if($config->get_user_movie_stats || $config->get_user_show_stats || $config->get_user_music_stats || $config->get_year_stats_movies || $config->get_year_stats_shows || $config->get_year_stats_music) {
@@ -223,7 +198,7 @@ if($config->get_user_movie_stats || $config->get_user_show_stats || $config->get
 
 } else {
     // Log updating cache
-    log_activity($id, "No options, creating empty dataset.");
+    $log->log_activity('get_stats.php', $id, 'No options, creating empty dataset.');
 
     // No options selected, empty datasets being configured
     $user_movies = array("error" => True, "message" => "Disabled in config.", "data" => array());
@@ -238,12 +213,12 @@ if($config->get_user_movie_stats || $config->get_user_show_stats || $config->get
 // Get show buddy if enabled, shows are not empty, and shows is enabled.
 if($config->get_year_stats_shows && $config->get_user_show_buddy && count($user_shows["data"]["shows"]) > 0) {
     // Log show-buddy action
-    log_activity($id, "Getting show-buddy.");
+    $log->log_activity('get_stats.php', $id, 'Getting show-buddy.');
     
 	$user_shows["data"] = $user_shows["data"] + array("show_buddy" => data_get_user_show_buddy($id, $user_shows["data"]["shows"][0]["title"], $tautulli_data));
 } else {
     // Log show-buddy action
-    log_activity($id, "Show-buddy disabled.");
+    $log->log_activity('get_stats.php', $id, 'Show-buddy disabled.');
 
 	$user_shows["data"] = $user_shows["data"] + array("show_buddy" => array("message" => "Disabled in config.", "error" => True));
 }
@@ -252,7 +227,7 @@ if($config->get_year_stats_shows && $config->get_user_show_buddy && count($user_
 $now = new DateTime('NOW');
 
 // Log wrapped create
-log_activity($id, "Printing wrapped data");
+$log->log_activity('get_stats.php', $id, 'Printing wrapped data');
 
 // Print results on page
 $result = json_encode(array("error" => False,
@@ -307,6 +282,49 @@ function create_url() {
 
     // Return the URL
     return $base . $ip . $port . $root;
+}
+
+function tautulli_test_connection() {
+    global $connection;
+    global $config;
+    $url = $connection . "/api/v2?apikey=" . $config->tautulli_apikey . "&cmd=status";
+
+    try {
+
+        // Call Tautulli status API
+        //  Initiate curl
+        $ch = curl_init();
+    
+        // Set the options for curl
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    
+        // Execute curl
+        $result = curl_exec($ch);
+    
+        // Check if an error occurred
+        if(curl_errno($ch)) {
+            return false;
+        }
+    
+        // Closing curl
+        curl_close($ch);
+    
+        // Decode the JSON response
+        $decoded = json_decode($result, true);
+    
+        // Check reponse for success
+        if($decoded["response"]["result"] == "success") {
+            return true;
+        }
+        
+        return false;
+    
+    // Catch errors
+    } catch (Exception $e) {
+        return false;
+    }
 }
 
 function tautulli_get_user($input) {
@@ -389,36 +407,103 @@ function update_cache($result) {
     return True;
 }
 
-function log_activity($id, $message) {
+function caching_mode() {
     global $config;
+    $id = "Caching mode";
 
-    if($config->use_logs) {
-        try {
-            $date = date('Y-m-d H:i:s');
-
-            $path = "../config/wrapped.log";
-            if(@!file_exists($path)) {
-                $temp = @fopen($path, "w");
-                fwrite($temp, 'Plex Wrapped');
-                fclose($temp);
-            }
-        
-            $log_file = @fopen($path, 'a');
-            @fwrite($log_file, PHP_EOL . $date . ' - get_stats.php - ID: ' . $id . ' - ' . $message);
-
-            if(@fclose($log_file)) {
-                return True;
-            } 
-
-        } catch(Error $e) {
-            http_response_code(500);
-            echo json_encode(array("error" => True, "message" => "Failed to log event."));
-            exit();
-        }
+    // Log caching mode
+	$log->log_activity('get_stats.php', $id, 'Tautulli connection test was successful.');
 	
-    }
+	if(!$config->use_cache) {
+        http_response_code(400);
+		echo json_encode(array("message" => "Caching is disabled.", "error" => true));
+		exit(0);
+	}
+	
+	// Log checking cache
+	$log->log_activity('get_stats.php', $id, 'Starting cache loop.');
+	
 
-	return True;
+	// Log checking cache
+	$log->log_activity('get_stats.php', $id, 'Checking data-cache.');
+
+	// GET WRAPPED DATES CACHE
+	if($config->use_cache) {
+		if($cache = check_cache()) {
+			$tautulli_data = $cache;
+		} else {
+			$tautulli_data = array();
+		}
+	} else {
+		$tautulli_data = array();
+	}
+
+	// Log refresh cache
+	$log->log_activity('get_stats.php', $id, 'Refreshing data-cache of missing/incomplete days, maximum ' . $cache_limit . ' days');
+
+	// Refresh the cache
+	$tautulli_data = tautulli_get_wrapped_dates($id, $tautulli_data, $cache_limit);
+	$complete_date_loop = $tautulli_data["complete"];
+	$tautulli_data = $tautulli_data["data"];
+	
+	// Log updating cache
+	$log->log_activity('get_stats.php', $id, 'Saving data-cache.');
+
+	// SAVE WRAPPED DATES CACHE
+	if($config->use_cache) {
+		update_cache($tautulli_data);
+	}
+
+    http_response_code(200);
+	echo json_encode(array("message" => "Caching complete.", "caching_complete" => $complete_date_loop, "error" => False));
+	exit(0);
+
+}
+
+function call_tautulli_url($url) {
+    global $connection;
+    global $config;
+    global $id;
+    global $log;
+
+    try {
+
+        //  Initiate curl
+        $ch = curl_init();
+    
+        // Set the options for curl
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    
+        // Execute curl
+        $result = curl_exec($ch);
+    
+        // Check if an error occurred
+        if(curl_errno($ch)) {
+            throw new Exception('Tautulli API call was not successful.');
+        }
+    
+        // Closing curl
+        curl_close($ch);
+    
+        // Decode the JSON response
+        $result = json_decode($result, true);
+
+        if($result) {
+            return $result;
+        } else {
+            throw new Exception('Tautulli API call was not successful.');
+        }
+
+    // Catch errors
+    } catch (Exception $e) {
+        // Log activity
+        $log->log_activity('get_stats.php', $id, $e->getMessage());
+
+        echo json_encode(array("message" => $e->getMessage(), "error" => true));
+        exit(0);
+    }
 }
 
 function tautulli_get_wrapped_dates($id, $array, $loop_interval) {
@@ -427,6 +512,7 @@ function tautulli_get_wrapped_dates($id, $array, $loop_interval) {
 
     global $connection;
     global $config;
+    global $log;
     global $arrContextOptions;
 
     $end_loop_date = $config->wrapped_end;
@@ -460,15 +546,12 @@ function tautulli_get_wrapped_dates($id, $array, $loop_interval) {
         }
 
         // Log that we are downoading a new day
-        log_activity($id, "Downloading day: " . $current_loop_date);
+        $log->log_activity('get_stats.php', $id, 'Downloading day: ' . $current_loop_date);
 
         $url = $connection . "/api/v2?apikey=" . $config->tautulli_apikey . "&cmd=get_history&order_column=date&order_dir=desc&include_activity=0&length=" . $config->tautulli_length . "&start_date=" . $current_loop_date;
 
-        if($config->ssl) {
-            $response = json_decode(file_get_contents($url, false, stream_context_create($arrContextOptions)), True);
-        } else {
-            $response = json_decode(file_get_contents($url), True);
-        }
+        // Call URL for data
+        $response = call_tautulli_url($url);
         
         // Filter data by content type. Movie, episode or track.
         $temp = $response["response"]["data"]["data"];
@@ -508,7 +591,7 @@ function tautulli_get_wrapped_dates($id, $array, $loop_interval) {
     // End time and calcualte total duration.
     $time_end = microtime(true);
     $execution_time = ($time_end - $time_start);
-    log_activity($id, 'Refresh execution: '.$execution_time.' Seconds');
+    $log->log_activity('get_stats.php', $id, 'Refresh execution: '.$execution_time.' Seconds');
 	
     return array("data" => $array, "complete" => $complete_date_loop);
 }
@@ -521,6 +604,7 @@ function data_get_user_stats_loop($id, $array) {
     // Define global values needed
     global $connection;
     global $config;
+    global $log;
     global $arrContextOptions;
 
     // Pre-define variables as empty
@@ -1039,7 +1123,7 @@ function data_get_user_stats_loop($id, $array) {
     // Calculate and log execution time
     $time_end = microtime(true);
     $execution_time = ($time_end - $time_start);
-    log_activity($id, 'Wrapping execution: '.$execution_time.' seconds');
+    $log->log_activity('get_stats.php', $id, 'Wrapping execution: '.$execution_time.' seconds');
 
     return array("movies" => $return_movies, "shows" => $return_shows, "music" => $return_music, "year_movies" => $return_year_movies, "year_shows" => $return_year_shows, "year_music" => $return_year_music, "year_users" => $return_year_users);
 }
@@ -1050,6 +1134,7 @@ function data_get_user_show_buddy($id, $show, $array) {
 	
     global $connection;
     global $config;
+    global $log;
     global $name;
     global $arrContextOptions;
 
@@ -1109,7 +1194,7 @@ function data_get_user_show_buddy($id, $show, $array) {
 	
 	$time_end = microtime(true);
     $execution_time = ($time_end - $time_start);
-    log_activity($id, 'Buddy execution: '.$execution_time.' seconds');
+    $log->log_activity('get_stats.php', $id, 'Buddy execution: '.$execution_time.' seconds');
 
     return $buddy;
 }

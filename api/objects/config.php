@@ -56,31 +56,35 @@ class Config{
         // Parse JSON from config
         $json = json_decode(file_get_contents($this->path));
 
-        // Assign values from config file
-        $this->tautulli_apikey = $json->tautulli_apikey;
-        $this->tautulli_ip = $json->tautulli_ip;
-        $this->tautulli_port = $json->tautulli_port;
-        $this->tautulli_length = $json->tautulli_length;
-        $this->tautulli_root = $json->tautulli_root;
-        $this->ssl = $json->ssl;
-        $this->password = $json->password;
-        $this->username = $json->username;
-        $this->timezone = $json->timezone;
-        $this->use_cache = $json->use_cache;
-        $this->use_logs = $json->use_logs;
-        $this->client_id = $json->client_id;
-        $this->plex_wrapped_root = $json->plex_wrapped_root;
-        $this->wrapped_start = $json->wrapped_start;
-        $this->wrapped_end = $json->wrapped_end;
-        $this->stats_intro = $json->stats_intro;
-        $this->get_user_movie_stats = $json->get_user_movie_stats;
-        $this->get_user_show_stats = $json->get_user_show_stats;
-        $this->get_user_show_buddy = $json->get_user_show_buddy;
-        $this->get_user_music_stats = $json->get_user_music_stats;
-        $this->get_year_stats_movies = $json->get_year_stats_movies;
-        $this->get_year_stats_shows = $json->get_year_stats_shows;
-        $this->get_year_stats_music = $json->get_year_stats_music;
-        $this->get_year_stats_leaderboard = $json->get_year_stats_leaderboard;
+        if(!empty($json)) {
+
+            // Assign values from config file
+            $this->tautulli_apikey = $json->tautulli_apikey;
+            $this->tautulli_ip = $json->tautulli_ip;
+            $this->tautulli_port = $json->tautulli_port;
+            $this->tautulli_length = $json->tautulli_length;
+            $this->tautulli_root = $json->tautulli_root;
+            $this->ssl = $json->ssl;
+            $this->password = $json->password;
+            $this->username = $json->username;
+            $this->timezone = $json->timezone;
+            $this->use_cache = $json->use_cache;
+            $this->use_logs = $json->use_logs;
+            $this->client_id = $json->client_id;
+            $this->plex_wrapped_root = $json->plex_wrapped_root;
+            $this->wrapped_start = $json->wrapped_start;
+            $this->wrapped_end = $json->wrapped_end;
+            $this->stats_intro = $json->stats_intro;
+            $this->get_user_movie_stats = $json->get_user_movie_stats;
+            $this->get_user_show_stats = $json->get_user_show_stats;
+            $this->get_user_show_buddy = $json->get_user_show_buddy;
+            $this->get_user_music_stats = $json->get_user_music_stats;
+            $this->get_year_stats_movies = $json->get_year_stats_movies;
+            $this->get_year_stats_shows = $json->get_year_stats_shows;
+            $this->get_year_stats_music = $json->get_year_stats_music;
+            $this->get_year_stats_leaderboard = $json->get_year_stats_leaderboard;
+
+        }
 
     }
 
