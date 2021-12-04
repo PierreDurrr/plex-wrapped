@@ -23,6 +23,7 @@ if(empty($data)) {
 
     echo json_encode(array("error" => true, "message" => "No input provided."));
     exit(0);
+	
 }
 
 // Remove potential harmfull input

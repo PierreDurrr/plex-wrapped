@@ -139,14 +139,10 @@ function get_config_cache() {
     xhttp.onreadystatechange = function() {
         if (this.readyState == 4 && this.status == 200) {
             var result = JSON.parse(this.responseText);
-            if(result.error) { 
-                alert(result.message);
+            if(result.password) {
+                login_menu();
             } else {
-                if(result.password) {
-                    login_menu();
-                } else {
-                    alert(result.message);
-                }
+                alert(result.message);
             }
         }
     };
