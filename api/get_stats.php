@@ -70,6 +70,16 @@ if($caching) {
 // Variable to skip updating the cache
 $skip_refresh = false;
 
+// Check caching mode
+if($caching) {
+    
+    // Log activity
+    $log->log_activity('get_stats.php', 'unknown', 'Starting caching mode.');
+
+    caching_mode();
+
+}
+
 // Test Tautulli connection
 if(!tautulli_test_connection()) {
 
