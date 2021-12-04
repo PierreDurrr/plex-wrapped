@@ -1,0 +1,147 @@
+<?php
+class Config{
+
+    // Object properties
+    // Config path
+    private $path;
+
+    // Tautulli
+    public $tautulli_apikey;
+    public $tautulli_ip;
+    public $tautulli_port;
+    public $tautulli_length;
+    public $tautulli_root;
+    public $ssl;
+
+    // Admin user
+    public $password;
+    public $username;
+
+    // Plex-Wrapped config
+    public $timezone;
+    public $use_cache;
+    public $use_logs;
+    public $client_id;
+
+    // Plex Wrapped custom
+    public $wrapped_start;
+    public $wrapped_end;
+    public $stats_intro;
+    public $get_user_movie_stats;
+    public $get_user_show_stats;
+    public $get_user_show_buddy;
+    public $get_user_music_stats;
+    public $get_year_stats_movies;
+    public $get_year_stats_shows;
+    public $get_year_stats_music;
+    public $get_year_stats_leaderboard;
+
+    // Constructor
+    public function __construct(){
+
+        // Delcare config path
+        $this->path = $_SERVER['DOCUMENT_ROOT'] . '/config/config.json';
+
+        // Check if config file exists, if not, create it
+        if(!file_exists($this->path)) {
+            @$create_config = fopen($this->path, "w");
+            if(!$create_config) {
+                echo json_encode(array("message" => "Failed to create config.json. Is the 'config' directory writable?", "error" => true));
+                exit();
+            }
+            fclose($create_config);
+        }
+
+        // Parse JSON from config
+        $json = json_decode(file_get_contents($this->path));
+
+        // Assign values from config file
+        $this->tautulli_apikey = $json->tautulli_apikey;
+        $this->tautulli_ip = $json->tautulli_ip;
+        $this->tautulli_port = $json->tautulli_port;
+        $this->tautulli_length = $json->tautulli_length;
+        $this->tautulli_root = $json->tautulli_root;
+        $this->ssl = $json->ssl;
+        $this->password = $json->password;
+        $this->username = $json->username;
+        $this->timezone = $json->timezone;
+        $this->use_cache = $json->use_cache;
+        $this->use_logs = $json->use_logs;
+        $this->client_id = $json->client_id;
+        $this->wrapped_start = $json->wrapped_start;
+        $this->wrapped_end = $json->wrapped_end;
+        $this->stats_intro = $json->stats_intro;
+        $this->get_user_movie_stats = $json->get_user_movie_stats;
+        $this->get_user_show_stats = $json->get_user_show_stats;
+        $this->get_user_show_buddy = $json->get_user_show_buddy;
+        $this->get_user_music_stats = $json->get_user_music_stats;
+        $this->get_year_stats_movies = $json->get_year_stats_movies;
+        $this->get_year_stats_shows = $json->get_year_stats_shows;
+        $this->get_year_stats_music = $json->get_year_stats_music;
+        $this->get_year_stats_leaderboard = $json->get_year_stats_leaderboard;
+
+    }
+
+    public function verify_wrapped_admin($username, $password) {
+        return password_verify($password, $this->password) && $username == $this->username;
+    }
+
+    public function save_config($data, $clear_cache) {
+
+        // If clear cache is enabled, clear the cache
+        if($clear_cache) {
+            include_once $_SERVER['DOCUMENT_ROOT'] . '/api/objects/cache.php';
+            $cache = new Cache();
+
+            if(!$cache->clear_cache()) {
+                echo json_encode(array("message" => "Failed to clear the cache. Is the 'config' directory writable?", "error" => true));
+                exit();
+            }
+        }
+        
+        // Hash the new password if changed
+        if($data->password !== "") {
+            $hash = password_hash($config_data->password, PASSWORD_DEFAULT);
+            $this->password = $hash;
+        } 
+        
+        // Assign new variables from recieved config
+        $this->tautulli_apikey = $data->tautulli_apikey;
+        $this->tautulli_ip = $data->tautulli_ip;
+        $this->tautulli_port = $data->tautulli_port;
+        $this->tautulli_length = $data->tautulli_length;
+        $this->tautulli_root = $data->tautulli_root;
+        $this->ssl = $data->ssl;
+        $this->username = $data->username;
+        $this->timezone = $data->timezone;
+        $this->use_cache = $data->use_cache;
+        $this->use_logs = $data->use_logs;
+        $this->client_id = $data->client_id;
+        $this->wrapped_start = $data->wrapped_start;
+        $this->wrapped_end = $data->wrapped_end;
+        $this->stats_intro = $data->stats_intro;
+        $this->get_user_movie_stats = $data->get_user_movie_stats;
+        $this->get_user_show_stats = $data->get_user_show_stats;
+        $this->get_user_show_buddy = $data->get_user_show_buddy;
+        $this->get_user_music_stats = $data->get_user_music_stats;
+        $this->get_year_stats_movies = $data->get_year_stats_movies;
+        $this->get_year_stats_shows = $data->get_year_stats_shows;
+        $this->get_year_stats_music = $data->get_year_stats_music;
+        $this->get_year_stats_leaderboard = $data->get_year_stats_leaderboard;
+
+        // Generate new random client ID if empty
+        if($this->client_id === "") {
+            $this->client_id = md5(rand(0,1000));
+        }
+
+        // Save new variables to file
+        if(file_put_contents($this->path, json_encode($this))) {
+            return true;
+        } else {
+            return false;
+        }
+        
+    }
+
+}
+?>

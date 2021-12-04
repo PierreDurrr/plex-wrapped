@@ -84,6 +84,8 @@ function get_config() {
                 use_cache = result.data.use_cache;
 				use_logs = result.data.use_logs;
 
+                clientID = result.data.clientID;
+
                 set_tautulli(true);
             }
         }

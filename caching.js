@@ -6,13 +6,19 @@ function search_box() {
         <form id='stats_form' class='form' onsubmit='return false' action="" method="post">
 		
 			<p style="font-size:1em;">
-				This will call the API in a loop until all the entires in the set period are cached. The entry below allows you to choose the maximum amount of days to be cached each time you call the API to attempt pre-caching. Having a higher amount of days requires the PHP script to run longer meaning you might have to configure the php.ini file.
+				When you configured a wrapped period, it included the amount of days you want to analyze. Each unique day in that period is a new API request to Tautulli.
+                <br>
+                <br>
+                Here you can perform a full caching of all those days, by calling the Plex-Wrapped API in a loop, downloading all the data needed. This makes the site fast to load.
+                <br>
+                <br>
+                Plex-Wrapped uses PHP, which has script run-time limits. The input below allows you to reduce the number of days cached each time the cacher loops, preventing the PHP script from running for more than the allowed runtime (typically 120 seconds).
 			</p>
 
             <div class='form-group'>
 
-                <label for="days" title="">Maximum days per API call</label>
-                <input type="number" class='form-control' name="days" id="days" minlenght='1' value='100' autocomplete="off" required />
+                <label for="days" title="">Days to cache:</label>
+                <input type="number" class='form-control' name="days" id="days" minlenght='1' value='50' autocomplete="off" required />
 
             </div>
 
@@ -185,12 +191,12 @@ function login_menu() {
     var html = '<form id="password_login_form" onsubmit="get_config();return false">'
 
     html += '<div class="form-group">';
-    html += '<label for="username" title="The username chosen during first-time setup.">Username</label>';
+    html += '<label for="username" title="The administrator username chosen during first-time setup.">Username:</label>';
     html += '<input type="text" class="form-control" id="username" value="" autocomplete="on" minlength=4 required />';
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="password" title="The password chosen during first-time setup.">Password</label>';
+    html += '<label for="password" title="The password chosen for the administrator during first-time setup.">Password:</label>';
     html += '<input type="password" class="form-control" id="password" value="" autocomplete="off" required />';
     html += '</div>';
 

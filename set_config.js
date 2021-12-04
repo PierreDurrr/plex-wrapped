@@ -1,7 +1,7 @@
 function set_config() {
 
     var clear_cache = document.getElementById('clear_cache').checked;
-
+    
     config_form = {
                         "password" : current_password,
                         "username" : current_username,
@@ -28,11 +28,14 @@ function set_config() {
                             "get_year_stats_music" : get_year_stats_music,
                             "get_year_stats_leaderboard" : get_year_stats_leaderboard,
                             "use_cache" : use_cache,
-							"use_logs" : use_logs
+							"use_logs" : use_logs,
+                            "client_id" : client_id
                         }
                    };
 
     var config_data = JSON.stringify(config_form);
+
+    console.log(config_data);
 
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function() {

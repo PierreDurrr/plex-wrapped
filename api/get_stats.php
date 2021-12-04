@@ -5,7 +5,7 @@ $path = "../config/config.json";
 if(!file_exists($path)) {
 	@$create_config = fopen($path, "w");
 	if(!$create_config) {
-		echo json_encode(array("message" => "Failed to create config.json. Is the config directory writable?", "error" => true));
+		echo json_encode(array("message" => "Failed to create config.json. Is the 'config' directory writable?", "error" => true));
 		exit(0);
 	}
 }	

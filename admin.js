@@ -397,6 +397,7 @@ function test_tautulli_connection() {
                 button.style.backgroundColor = '#79A04F';
             } else {
                 button.style.backgroundColor = '#F1909C';
+                alert(result.message);
             }
         }
     };
