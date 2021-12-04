@@ -22,6 +22,7 @@ class Config{
     public $use_cache;
     public $use_logs;
     public $client_id;
+    public $plex_wrapped_root;
 
     // Plex Wrapped custom
     public $wrapped_start;
@@ -39,12 +40,12 @@ class Config{
     // Constructor
     public function __construct(){
 
-        // Delcare config path
-        $this->path = $_SERVER['DOCUMENT_ROOT'] . '/config/config.json';
+        // Declare config path
+        $this->path = dirname(__FILE__, 3) . '/config/config.json';
 
         // Check if config file exists, if not, create it
         if(!file_exists($this->path)) {
-            @$create_config = fopen($this->path, "w");
+            $create_config = fopen($this->path, "w");
             if(!$create_config) {
                 echo json_encode(array("message" => "Failed to create config.json. Is the 'config' directory writable?", "error" => true));
                 exit();
@@ -68,6 +69,7 @@ class Config{
         $this->use_cache = $json->use_cache;
         $this->use_logs = $json->use_logs;
         $this->client_id = $json->client_id;
+        $this->plex_wrapped_root = $json->plex_wrapped_root;
         $this->wrapped_start = $json->wrapped_start;
         $this->wrapped_end = $json->wrapped_end;
         $this->stats_intro = $json->stats_intro;
@@ -94,7 +96,7 @@ class Config{
 
         // If clear cache is enabled, clear the cache
         if($clear_cache) {
-            include_once $_SERVER['DOCUMENT_ROOT'] . '/api/objects/cache.php';
+            include_once dirname(__FILE__, 3) . '/api/objects/cache.php';
             $cache = new Cache();
 
             if(!$cache->clear_cache()) {
@@ -125,6 +127,7 @@ class Config{
         $this->use_cache = $data->use_cache;
         $this->use_logs = $data->use_logs;
         $this->client_id = $data->client_id;
+        $this->plex_wrapped_root = $data->plex_wrapped_root;
         $this->wrapped_start = $data->wrapped_start;
         $this->wrapped_end = $data->wrapped_end;
         $this->stats_intro = $data->stats_intro;

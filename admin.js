@@ -206,6 +206,11 @@ function set_tautulli_details(back) {
 
     html += '<form id="tautulli_details_form" onsubmit="set_tautulli_last(false);return false">'
 
+    html += '<div class="form-group">';
+    html += '<label for="plex_wrapped_root" title="Subfolder for Plex-Wrapped, no slashes needed at the beginning or end. It is the folder accessed after the main IP/domain. For example: \'mycooldomain.com/wrapped\' would mean you enter \'wrapped\' here.">Root for Plex-Wrapped: (Optional)</label>';
+    html += '<input type="text" class="form-control" id="plex_wrapped_root" value="' + plex_wrapped_root + '" autocomplete="off" placeholder=""/><br>';
+    html += '</div>';
+
     var temp_date = wrapped_start.toLocaleDateString("en-GB", { // you can skip the first argument
                           year: "numeric",
                           month: "2-digit",
@@ -408,6 +413,8 @@ function test_tautulli_connection() {
 
 function set_tautulli_last(back) {
     if(!back) {
+        
+        plex_wrapped_root = document.getElementById('plex_wrapped_root').value;
         wrapped_start = new Date(document.getElementById('wrapped_start').value);
         wrapped_end = new Date(document.getElementById('wrapped_end').value);
         if(wrapped_end < wrapped_start) {

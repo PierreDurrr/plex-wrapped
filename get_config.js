@@ -83,6 +83,7 @@ function get_config() {
 				use_logs = result.data.use_logs;
 
                 clientID = result.data.clientID;
+                plex_wrapped_root = result.data.plex_wrapped_root;
 
                 set_tautulli(true);
             }

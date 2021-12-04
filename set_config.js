@@ -29,7 +29,8 @@ function set_config() {
                             "get_year_stats_leaderboard" : get_year_stats_leaderboard,
                             "use_cache" : use_cache,
 							"use_logs" : use_logs,
-                            "client_id" : client_id
+                            "client_id" : client_id,
+                            "plex_wrapped_root" : plex_wrapped_root
                         }
                    };
 

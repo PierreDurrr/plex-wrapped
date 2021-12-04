@@ -9,7 +9,7 @@ class Cache{
     public function __construct(){
 
         // Delcare cache path
-        $this->path = $_SERVER['DOCUMENT_ROOT'] . '/config/cache.json';
+        $this->path = dirname(__FILE__, 3) . '/config/cache.json';
 
         // Check if cache file exists, if not, create it
         if(!file_exists($this->path)) {

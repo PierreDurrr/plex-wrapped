@@ -7,8 +7,8 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 // Files needed to use objects
-include_once 'objects/config.php';
-include_once 'objects/log.php';
+require(dirname(__FILE__) . '/objects/config.php');
+require(dirname(__FILE__) . '/objects/log.php');
 
 // Create variables
 $config = new Config();

@@ -12,7 +12,7 @@ class Log{
     public function __construct(){
 
         // Delcare log path
-        $this->path = $_SERVER['DOCUMENT_ROOT'] . '/config/wrapped.log';
+        $this->path = dirname(__FILE__, 3) . '/config/wrapped.log';
 
         // Check if log file exists, if not, create it
         if(!file_exists($this->path)) {
@@ -26,7 +26,7 @@ class Log{
         }
 
         // Assign use_logs configuration from config
-        include_once($_SERVER['DOCUMENT_ROOT'] . '/api/objects/config.php');
+        include_once(dirname(__FILE__, 3) . '/api/objects/config.php');
         $config = new Config();
         $this->use_logs = $config->use_logs;
     }
