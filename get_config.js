@@ -53,6 +53,7 @@ function get_config() {
                 tautulli_port = result.data.tautulli_port;
                 tautulli_length = result.data.tautulli_length;
                 tautulli_root = result.data.tautulli_root;
+                tautulli_libraries = result.data.tautulli_libraries;
 
                 ssl = result.data.ssl;
 

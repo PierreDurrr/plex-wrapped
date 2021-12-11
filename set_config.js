@@ -12,6 +12,7 @@ function set_config() {
                             "tautulli_port" : tautulli_port,
                             "tautulli_length" : tautulli_length,
                             "tautulli_root" : tautulli_root,
+                            "tautulli_libraries" : tautulli_libraries,
                             "ssl" : ssl,
                             "password" : password,
                             "username" : username,

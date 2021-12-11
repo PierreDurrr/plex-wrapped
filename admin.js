@@ -163,6 +163,11 @@ function set_tautulli(back) {
     html += '</div>';
 
     html += '<div class="form-group">';
+    html += '<label for="tautulli_libraries" title="Comma seprated list of ID\'s to use for statistics. If none are given, it will search all.">Libraries ID\'s to use: (Optional)</label>';
+    html += '<input type="text" class="form-control" id="tautulli_libraries" value="' + tautulli_libraries + '" autocomplete="off" placeholder=""/><br>';
+    html += '</div>';
+
+    html += '<div class="form-group">';
     html += '<label for="timezone" title="The timezone the data is located in, like \'Europe/Oslo\'. Type it exactly as it is specified in the PHP documentation.">Timezone: <a href="https://www.php.net/manual/en/timezones.php" target="_blank">(List)</a></label>';
     html += '<input type="text" class="form-control" id="timezone" value="' + timezone + '" autocomplete="off" placeholder="" required /><br>';
     html += '</div>';
@@ -197,6 +202,7 @@ function set_tautulli_details(back) {
         tautulli_port = document.getElementById('tautulli_port').value;
         tautulli_length = document.getElementById('tautulli_length').value;
         tautulli_root = document.getElementById('tautulli_root').value;
+        tautulli_libraries = document.getElementById('tautulli_libraries').value;
         timezone = document.getElementById('timezone').value;
         ssl = document.getElementById('ssl').checked;
     }

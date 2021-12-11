@@ -85,7 +85,7 @@ function cache_log(days, result, complete) {
 function get_stats(days) {
 
     stats_form = {
-                        "p_identity" : '0',
+                        "cookie" : '',
 						"caching" : true,
 						"cache_limit" : days
                    };

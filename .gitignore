@@ -4,3 +4,4 @@ config/config.json
 config/cache.json
 api/plex_auth.php
 api/test.php
+config/links

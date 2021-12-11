@@ -7,6 +7,7 @@ A website-based platform and API for collecting Plex user stats within a set tim
 
 ### Features
 - Custom timeframes
+- Plex Auth
 - Custom introduction
 - Movies, shows & music
 - Caching of results
@@ -18,9 +19,10 @@ A website-based platform and API for collecting Plex user stats within a set tim
 ![alt text](https://raw.githubusercontent.com/aunefyren/Plex-Wrapped/main/assets/img/example_02.PNG?raw=true)
 
 ### Credit
-- Beautiful illustrations downloaded from [FreeWebIllustrations](https://freewebillustrations.com)
+- Beautiful illustrations from [FreeWebIllustrations](https://freewebillustrations.com)
 - Amazing statistics gathered using [Tautulli](https://github.com/Tautulli/Tautulli)
 - Wonderful loading icon from [icons8](https://icons8.com/preloaders/en/miscellaneous/hourglass)
+- Splendid web icons from [icons8](https://icons8.com/icon/set/popular/material-rounded--static)
 
 ![alt text](https://raw.githubusercontent.com/aunefyren/Plex-Wrapped/main/assets/img/example_03.PNG?raw=true)
 
@@ -78,13 +80,35 @@ services:
         ports:
             - '80:80'
         container_name: plex-wrapped
-        image: 'aunefyren/plex-wrapped:latest'
+        image: 'aunefyren/plex-wrapped'
 ```
 
-And launch the file with 
+And launch the file with:
+
 
 ```
 $ docker-compose up
+```
+
+If you want to mount a volume for the config folder, you can do something like this:
+
+```
+version: '3.3'
+services:
+    plex-wrapped:
+        ports:
+            - '80:80'
+        container_name: plex-wrapped
+        image: 'aunefyren/plex-wrapped'
+        volumes:
+            - './my-folder:/var/www/html/config'
+```
+
+Afterwards, remember to chmod the mounted folder on the host so the container can write to it:
+
+
+```
+$ sudo chmod -R 0777 ./my-folder
 ```
 
 ### PHP Configuration

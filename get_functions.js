@@ -16,7 +16,11 @@ function get_functions() {
                 }
             } else {
                 functions = result;
-                get_stats();
+                if(!link_mode) {
+                    get_stats();
+                } else {
+                    load_page(results);
+                }
             }
         }
     };

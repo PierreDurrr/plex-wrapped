@@ -1,5 +1,5 @@
 <?php
-class Cache{
+class Cache {
 
     // Object properties
     // Cache path
@@ -35,6 +35,27 @@ class Cache{
             fclose($cache);
             return true;
         }
+    }
+
+    public function check_cache() {
+    
+        $cache = json_decode(file_get_contents($this->path), True);
+    
+        if(!empty($cache)) {
+            return $cache;
+        }
+    
+        return false;
+    }
+    
+    public function update_cache($result) {
+        
+        $save = json_encode($result);
+        if(file_put_contents($this->path, $save)) {
+            return true;
+        }
+
+        return false;
     }
 
 }

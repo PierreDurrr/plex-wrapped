@@ -7,19 +7,23 @@ header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
 // Files needed to use objects
+require(dirname(__FILE__) . '/objects/auth.php');
 require(dirname(__FILE__) . '/objects/config.php');
 require(dirname(__FILE__) . '/objects/log.php');
+require(dirname(__FILE__) . '/objects/cache.php');
 
 // Create variables
 $config = new Config();
+$auth = new Auth();
 $log = new Log();
+$cache = new Cache();
 $data = json_decode(file_get_contents("php://input"));
 
 // Check if configured
 if(!$config->is_configured()) {
 
     // Log activity
-    $log->log_activity('get_stats.php', 'unknown', 'Tautulli connection test was successful.');
+    $log->log_activity('get_stats.php', 'unknown', 'Plex-Wrapped is not confgured..');
 
     echo json_encode(array("message" => "Plex-Wrapped is not confgured.", "error" => true));
     exit(0);
@@ -29,16 +33,16 @@ if(!$config->is_configured()) {
 date_default_timezone_set($config->timezone);
 
 // Set maximum run-time
-set_time_limit(240);
+set_time_limit(300);
 
 // Base-URL for connections to Tautulli API.
 $connection = create_url();
 
 // Declare given inputs. GET and POST.
-if(!empty($data)){
-	$p_identity = htmlspecialchars(trim($data->p_identity));
-} else if(isset($_GET["p_identity"])) {
-	$p_identity = htmlspecialchars(trim($_GET["p_identity"]));
+if(!empty($data) && isset($data->cookie)){
+	$cookie = htmlspecialchars(trim($data->cookie));
+} else if(isset($_GET["cookie"])) {
+	$cookie = htmlspecialchars(trim($_GET["cookie"]));
 } else {
     http_response_code(400);
     echo json_encode(array("message" => "Input error.", "error" => true));
@@ -46,7 +50,7 @@ if(!empty($data)){
 }
 
 //Check if Caching parameter was supplied through GET or POST
-if(!empty($data) && !empty($data->caching)) {
+if(!empty($data) && isset($data->caching)) {
     $caching = filter_var(htmlspecialchars(trim($data->caching)), FILTER_VALIDATE_BOOLEAN);
 } else if(isset($_GET["caching"])) {
     $caching = filter_var(htmlspecialchars(trim($_GET["caching"])), FILTER_VALIDATE_BOOLEAN);
@@ -56,7 +60,7 @@ if(!empty($data) && !empty($data->caching)) {
 
 // Confirm input variables
 if($caching) {
-	if(!empty($data->cache_limit)) {
+	if(!empty($data) && isset($data->cache_limit)) {
 		$cache_limit = htmlspecialchars(trim($data->cache_limit));
 	} else if(isset($_GET["cache_limit"])) {
 		$cache_limit = htmlspecialchars(trim($_GET["cache_limit"]));
@@ -66,9 +70,6 @@ if($caching) {
 		exit(0);
 	}
 }
-
-// Variable to skip updating the cache
-$skip_refresh = false;
 
 // Check caching mode
 if($caching) {
@@ -96,16 +97,34 @@ if(!tautulli_test_connection()) {
 
 }
 
-// Get user ID
-$id = tautulli_get_user($p_identity);
-if (!$id) {
-    http_response_code(400);
-    echo json_encode(array("message" => "No user found.", "error" => true));
+// Get Plex Token
+$token_object = json_decode($auth->validate_token($cookie));
+
+// Validate Plex ID
+if(empty($token_object) || !isset($token_object->data->id)) {
+    
+	// Log use
+	$log->log_activity('get_stats.php', 'unknown', 'Plex Token from cookie not valid.');
+
+    echo json_encode(array("error" => true, "message" => "Login not accepted. Log in again."));
     exit(0);
+	
 }
 
-// Log user found
-$log->log_activity('get_stats.php', $id, 'User found.');
+// Assign values from Plex Token
+$id = $token_object->data->id;
+if(isset($token_object->data->friendlyName)) {
+    $name = $token_object->data->friendlyName;
+} else if(isset($token_object->data->title)) {
+    $name = $token_object->data->title;
+} else if(isset($token_object->data->username)) {
+    $name = $token_object->data->username;
+} else if(isset($token_object->data->email)) {
+    $name = $token_object->data->email;
+}
+
+// Log use
+$log->log_activity('get_stats.php', $token_object->data->id, 'Plex-Wrapped login cookie accepted.');
 
 // Get user name
 $name = tautulli_get_name($id);
@@ -120,8 +139,8 @@ $log->log_activity('get_stats.php', $id, 'Checking data-cache.');
 
 // GET WRAPPED DATES CACHE
 if($config->use_cache) {
-    if($cache = check_cache()) {
-        $tautulli_data = $cache;
+    if($cache_data = $cache->check_cache()) {
+        $tautulli_data = $cache_data;
     } else {
         $tautulli_data = array();
     }
@@ -129,23 +148,19 @@ if($config->use_cache) {
     $tautulli_data = array();
 }
 
-if(!$skip_refresh) {
+// Log refresh cache
+$log->log_activity('get_stats.php', $id, 'Refreshing data-cache of missing/incomplete days');
 
-    // Log refresh cache
-    $log->log_activity('get_stats.php', $id, 'Refreshing data-cache of missing/incomplete days');
+// Refresh the cache
+$tautulli_data = tautulli_get_wrapped_dates($id, $tautulli_data, False);
+$tautulli_data = $tautulli_data["data"];
 
-    // Refresh the cache
-    $tautulli_data = tautulli_get_wrapped_dates($id, $tautulli_data, False);
-    $tautulli_data = $tautulli_data["data"];
+// Log updating cache
+$log->log_activity('get_stats.php', $id, 'Saving data-cache');
 
-    // Log updating cache
-    $log->log_activity('get_stats.php', $id, 'Saving data-cache');
-
-    // Save the wrapped cache date
-    if($config->use_cache) {
-        update_cache($tautulli_data);
-    }
-
+// Save the wrapped cache date
+if($config->use_cache) {
+    $cache->update_cache($tautulli_data);
 }
 
 // Log wrapped create
@@ -207,7 +222,7 @@ if($config->get_user_movie_stats || $config->get_user_show_stats || $config->get
     }
 
 } else {
-    // Log updating cache
+    // Log creating empty datasets
     $log->log_activity('get_stats.php', $id, 'No options, creating empty dataset.');
 
     // No options selected, empty datasets being configured
@@ -391,35 +406,11 @@ function tautulli_get_name($id) {
     }
 }
 
-function check_cache() {
-    global $config;
-    global $id;
-	
-	$path = "../config/cache.json";
-
-	if(!file_exists($path)) {
-		fopen($path, "w");
-	}	
-
-    $cache = json_decode(file_get_contents($path), True);
-
-    if(!empty($cache)) {
-        return $cache;
-    }
-
-    return False;
-}
-
-function update_cache($result) {
-    global $config;
-    $save = json_encode($result);
-    file_put_contents("../config/cache.json", $save);
-    return True;
-}
-
 function caching_mode($cache_limit) {
     global $config;
+    global $cache;
     global $log;
+    global $cache_data;
     $id = "Caching mode";
 
     // Log caching mode
@@ -440,8 +431,8 @@ function caching_mode($cache_limit) {
 
 	// GET WRAPPED DATES CACHE
 	if($config->use_cache) {
-		if($cache = check_cache()) {
-			$tautulli_data = $cache;
+		if($cache_data = $cache->check_cache()) {
+			$tautulli_data = $cache_data;
 		} else {
 			$tautulli_data = array();
 		}
@@ -457,12 +448,12 @@ function caching_mode($cache_limit) {
 	$complete_date_loop = $tautulli_data["complete"];
 	$tautulli_data = $tautulli_data["data"];
 	
-	// Log updating cache
+	// Log saving cache
 	$log->log_activity('get_stats.php', $id, 'Saving data-cache.');
 
-	// SAVE WRAPPED DATES CACHE
+	// Save the wrapped cache
 	if($config->use_cache) {
-		update_cache($tautulli_data);
+        $cache->update_cache($tautulli_data);
 	}
 
     http_response_code(200);
@@ -534,12 +525,20 @@ function tautulli_get_wrapped_dates($id, $array, $loop_interval) {
 	
 	$complete_date_loop = True;
 
+    $libraries = explode(',',$config->tautulli_libraries);
+    
+    if($libraries < 1) {
+        $libraries[0] = null;
+    }
+
+    
     for ($loop_time = $config->wrapped_start; $loop_time <= $end_loop_date; $loop_time += 86400) {
 
         $current_loop_date = date('Y-m-d', $loop_time);
         $now = new DateTime('NOW');
         $then = new DateTime($current_loop_date);
 
+        // Stop
         if($then > $now) {
             break;
         }
@@ -559,21 +558,36 @@ function tautulli_get_wrapped_dates($id, $array, $loop_interval) {
         // Log that we are downoading a new day
         $log->log_activity('get_stats.php', $id, 'Downloading day: ' . $current_loop_date);
 
-        $url = $connection . "/api/v2?apikey=" . $config->tautulli_apikey . "&cmd=get_history&order_column=date&order_dir=desc&include_activity=0&length=" . $config->tautulli_length . "&start_date=" . $current_loop_date;
-
-        // Call URL for data
-        $response = call_tautulli_url($url);
-        
-        // Filter data by content type. Movie, episode or track.
-        $temp = $response["response"]["data"]["data"];
+        // Clean array to populate with results
         $temp_clean = array();
-        for($j = 0; $j < count($temp); $j++) {
-            if($temp[$j]["media_type"] == "movie" || $temp[$j]["media_type"] == "episode" || $temp[$j]["media_type"] == "track") {
-				$temp2 = array("date" => $temp[$j]["date"], "duration" => $temp[$j]["duration"], "friendly_name" => $temp[$j]["friendly_name"], "full_title" => $temp[$j]["full_title"], "grandparent_rating_key" => $temp[$j]["grandparent_rating_key"], "grandparent_title" => $temp[$j]["grandparent_title"], "original_title" => $temp[$j]["original_title"], "media_type" => $temp[$j]["media_type"], "parent_rating_key" => $temp[$j]["parent_rating_key"], "parent_title" => $temp[$j]["parent_title"], "paused_counter" => $temp[$j]["paused_counter"], "percent_complete" => $temp[$j]["percent_complete"], "rating_key" => $temp[$j]["rating_key"], "title" => $temp[$j]["title"], "user" => $temp[$j]["user"], "user_id" => $temp[$j]["user_id"], "year" => $temp[$j]["year"]);
-				array_push($temp_clean, $temp2);
-			}
-        }
+
+        // Loop through selected libraries
+        for ($library_loop = 0; $library_loop < count($libraries); $library_loop++) {
+            
+            // If no libraries are selected do not specify one in API call to Tautulli
+            if($libraries[$library_loop] === null) {
+                $library_str = '';
+            } else {
+                $library_str = '&section_id=' . trim($libraries[$library_loop]);
+            }
+            
+            // Create URL for API call
+            $url = $connection . "/api/v2?apikey=" . $config->tautulli_apikey . "&cmd=get_history" . $library_str . "&order_column=date&order_dir=desc&include_activity=0&length=" . $config->tautulli_length . "&start_date=" . $current_loop_date;
+            
+            // Call URL for data
+            $response = call_tautulli_url($url);
+            
+            // Filter data by content type. Movie, episode or track.
+            $temp = $response["response"]["data"]["data"];
+            for($j = 0; $j < count($temp); $j++) {
+                if($temp[$j]["media_type"] == "movie" || $temp[$j]["media_type"] == "episode" || $temp[$j]["media_type"] == "track") {
+                    $temp2 = array("date" => $temp[$j]["date"], "duration" => $temp[$j]["duration"], "friendly_name" => $temp[$j]["friendly_name"], "full_title" => $temp[$j]["full_title"], "grandparent_rating_key" => $temp[$j]["grandparent_rating_key"], "grandparent_title" => $temp[$j]["grandparent_title"], "original_title" => $temp[$j]["original_title"], "media_type" => $temp[$j]["media_type"], "parent_rating_key" => $temp[$j]["parent_rating_key"], "parent_title" => $temp[$j]["parent_title"], "paused_counter" => $temp[$j]["paused_counter"], "percent_complete" => $temp[$j]["percent_complete"], "rating_key" => $temp[$j]["rating_key"], "title" => $temp[$j]["title"], "user" => $temp[$j]["user"], "user_id" => $temp[$j]["user_id"], "year" => $temp[$j]["year"]);
+                    array_push($temp_clean, $temp2);
+                }
+            }
         
+        }
+
         // If the date is today, then the data might not be complete. 
         if($now->format('Y-m-d') == $then->format('Y-m-d')) {
             $complete = False;
@@ -586,13 +600,14 @@ function tautulli_get_wrapped_dates($id, $array, $loop_interval) {
         } else {
             array_push($array, array("date" => $current_loop_date, "data" => $temp_clean, "complete" => $complete));
         }
-		
-		if($loop_interval > 0) {
-			$loop_interval -= 1;
-		} else if($loop_interval === 0) {
-			$complete_date_loop = False;
-			break;
-		}
+        
+        if($loop_interval > 0) {
+            $loop_interval -= 1;
+        } else if($loop_interval === 0) {
+            $complete_date_loop = False;
+            break;
+        }
+
     }
 	
     // Sort data by date
@@ -608,7 +623,7 @@ function tautulli_get_wrapped_dates($id, $array, $loop_interval) {
 }
 
 function data_get_user_stats_loop($id, $array) {
-
+    
     // Start execution timer
     $time_start = microtime(true);
 
@@ -1208,24 +1223,5 @@ function data_get_user_show_buddy($id, $show, $array) {
     $log->log_activity('get_stats.php', $id, 'Buddy execution: '.$execution_time.' seconds');
 
     return $buddy;
-}
-
-function tautulli_get_year_stats_cache($id) {
-    $cache = json_decode(file_get_contents("../config/cache.json"));
-    global $config;
-
-    if(!empty($cache)) {
-        for($i = 0; $i < count($cache); $i++) {
-            $now = new DateTime('NOW');
-            $then = new DateTime($cache[$i]->year_stats->data->origin_date);
-            $diff = $then->diff($now);
-
-            if(($diff->format('%a') < $config->cache_age_limit || $config->cache_age_limit == "" || $config->cache_age_limit == 0) && !$cache[$i]->year_stats->error) {
-                return $cache[$i]->year_stats->data;
-            }
-        }
-    }
-
-    return tautulli_get_year_stats($id);
 }
 ?>

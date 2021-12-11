@@ -1,5 +1,5 @@
 <?php
-class Config{
+class Config {
 
     // Object properties
     // Config path
@@ -11,6 +11,7 @@ class Config{
     public $tautulli_port;
     public $tautulli_length;
     public $tautulli_root;
+    public $tautulli_libraries;
     public $ssl;
 
     // Admin user
@@ -23,6 +24,7 @@ class Config{
     public $use_logs;
     public $client_id;
     public $plex_wrapped_root;
+    public $token_encrypter;
 
     // Plex Wrapped custom
     public $wrapped_start;
@@ -36,7 +38,7 @@ class Config{
     public $get_year_stats_shows;
     public $get_year_stats_music;
     public $get_year_stats_leaderboard;
-
+    
     // Constructor
     public function __construct(){
 
@@ -57,13 +59,14 @@ class Config{
         $json = json_decode(file_get_contents($this->path));
 
         if(!empty($json)) {
-
+            
             // Assign values from config file
             $this->tautulli_apikey = $json->tautulli_apikey;
             $this->tautulli_ip = $json->tautulli_ip;
             $this->tautulli_port = $json->tautulli_port;
             $this->tautulli_length = $json->tautulli_length;
             $this->tautulli_root = $json->tautulli_root;
+            $this->tautulli_libraries = $json->tautulli_libraries;
             $this->ssl = $json->ssl;
             $this->password = $json->password;
             $this->username = $json->username;
@@ -71,6 +74,7 @@ class Config{
             $this->use_cache = $json->use_cache;
             $this->use_logs = $json->use_logs;
             $this->client_id = $json->client_id;
+            $this->token_encrypter = $json->token_encrypter;
             $this->plex_wrapped_root = $json->plex_wrapped_root;
             $this->wrapped_start = $json->wrapped_start;
             $this->wrapped_end = $json->wrapped_end;
@@ -84,6 +88,11 @@ class Config{
             $this->get_year_stats_music = $json->get_year_stats_music;
             $this->get_year_stats_leaderboard = $json->get_year_stats_leaderboard;
 
+        }
+
+        // If token encrypter is not set, generate one
+        if($this->token_encrypter == '') {
+            $this->token_encrypter = md5(rand(0,1000));
         }
 
     }
@@ -126,6 +135,7 @@ class Config{
         $this->tautulli_port = $data->tautulli_port;
         $this->tautulli_length = $data->tautulli_length;
         $this->tautulli_root = $data->tautulli_root;
+        $this->tautulli_libraries = $data->tautulli_libraries;
         $this->ssl = $data->ssl;
         $this->timezone = $data->timezone;
         $this->use_cache = $data->use_cache;
@@ -149,6 +159,11 @@ class Config{
             $this->client_id = md5(rand(0,1000));
         }
 
+        // If token encrypter is not set, generate one
+        if($this->token_encrypter == '') {
+            $this->token_encrypter = md5(rand(0,1000));
+        }
+
         // Save new variables to file
         if(file_put_contents($this->path, json_encode($this))) {
             return true;
@@ -157,6 +172,7 @@ class Config{
         }
         
     }
+
 
 }
 ?>

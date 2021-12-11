@@ -1,5 +1,5 @@
 <?php
-class Log{
+class Log {
 
     // Object properties
     // Log path
