@@ -27,7 +27,8 @@ $functions_json = array("get_user_movie_stats" => $config->get_user_movie_stats,
 						"get_year_stats_shows" => $config->get_year_stats_shows,
 						"get_year_stats_music" => $config->get_year_stats_music,
 						"get_year_stats_leaderboard" => $config->get_year_stats_leaderboard,
-						"stats_intro" => $config->stats_intro
+						"stats_intro" => $config->stats_intro,
+						"create_share_links" => $config->create_share_links
 						);
 
 // Encode JSON and print it

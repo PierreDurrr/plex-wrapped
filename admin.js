@@ -231,7 +231,7 @@ function set_tautulli_details(back) {
     var temp_date_second = temp_date[1].split(':');
     html += '<div class="form-group">';
 	html += '<div class="warning">!<br>Load time for long wrapped periods are extensive. Consider enabling caching and performing pre-caching once.</div>';
-    html += '<label for="wrapped_start" title="The start of the period you want wrapped.">Start of wrapped period</label>';
+    html += '<label for="wrapped_start" title="The start of the period you want wrapped.">Start of wrapped period:</label>';
     html += '<input type="datetime-local" class="form-control" id="wrapped_start" value="' + temp_date_first[2].trim() + '-' + temp_date_first[1].trim() + '-' + temp_date_first[0].trim() + 'T' + temp_date_second[0].trim() + ':' + temp_date_second[1].trim() + '" required /><br>';
     html += '</div>';
 
@@ -248,19 +248,28 @@ function set_tautulli_details(back) {
     var temp_date_first = temp_date[0].split('/');
     var temp_date_second = temp_date[1].split(':');
     html += '<div class="form-group">';
-    html += '<label for="wrapped_end" title="The end of your wrapped period. All data until this point is viable.">End of wrapped period<br>';
+    html += '<label for="wrapped_end" title="The end of your wrapped period. All data until this point is viable.">End of wrapped period:<br>';
     html += '<input type="datetime-local" class="form-control" id="wrapped_end" value="' + temp_date_first[2].trim() + '-' + temp_date_first[1].trim() + '-' + temp_date_first[0].trim() + 'T' + temp_date_second[0].trim() + ':' + temp_date_second[1].trim() + '" required /></label>';
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="stats_intro" title="Introduction text that is shown when the statistics are done loading. Could be used to inform about chosen timeframe. HTML allowed.">Introduction for statistics page<br>';
+    html += '<label for="stats_intro" title="Introduction text that is shown when the statistics are done loading. Could be used to inform about chosen timeframe. HTML allowed.">Introduction for statistics page:<br>';
     html += '<textarea cols="40" rows="5" class="form-control" style="overflow-x: hidden;resize:vertical;min-height: 5em;" id="stats_intro" name="stats_intro" value="" autocomplete="off" placeholder="New year, new page of statistics..."></textarea></label>';
+    html += '</div>';
+
+    html += '<div class="form-group">';
+    html += '<label for="create_share_links" title="Grants users the ability to create a URL for sharing. Valid for 7 days.">Allow shareable URL creation:<br>';
+    html += '<input type="checkbox" class="form-control" id="create_share_links" ';
+    if(create_share_links) {
+        html += 'checked="' + create_share_links + '" ';
+    }
+    html += '/><br>';
     html += '</div>';
 
     html += '<hr>';
 
     html += '<div class="form-group">';
-    html += '<label for="get_user_movie_stats" title="Includes movie statistics in your wrapped period.">Get users movie statistics<br>';
+    html += '<label for="get_user_movie_stats" title="Includes movie statistics in your wrapped period.">Get users movie statistics:<br>';
     html += '<input type="checkbox" class="form-control" id="get_user_movie_stats" ';
     if(get_user_movie_stats) {
         html += 'checked="' + get_user_movie_stats + '" ';
@@ -269,7 +278,7 @@ function set_tautulli_details(back) {
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="get_user_show_stats" title="Includes show statistics in your wrapped period.">Get users show statistics<br>';
+    html += '<label for="get_user_show_stats" title="Includes show statistics in your wrapped period.">Get users show statistics:<br>';
     html += '<input type="checkbox" class="form-control" id="get_user_show_stats" ';
     if(get_user_show_stats) {
         html += 'checked="' + get_user_show_stats + '" ';
@@ -278,7 +287,7 @@ function set_tautulli_details(back) {
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="get_user_show_buddy" title="Includes the users top show-buddy in your wrapped period. Requires show stats.">Get users show-buddy<br>';
+    html += '<label for="get_user_show_buddy" title="Includes the users top show-buddy in your wrapped period. Requires show stats.">Get users show-buddy:<br>';
     html += '<input type="checkbox" class="form-control" id="get_user_show_buddy" ';
     if(get_user_show_buddy) {
         html += 'checked="' + get_user_show_buddy + '" ';
@@ -287,7 +296,7 @@ function set_tautulli_details(back) {
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="get_user_music_stats" title="Includes music statistics in your wrapped period.">Get users music statistics<br>';
+    html += '<label for="get_user_music_stats" title="Includes music statistics in your wrapped period.">Get users music statistics:<br>';
     html += '<input type="checkbox" class="form-control" id="get_user_music_stats" ';
     if(get_user_music_stats) {
         html += 'checked="' + get_user_music_stats + '" ';
@@ -298,7 +307,7 @@ function set_tautulli_details(back) {
     html += '<hr>';
 
     html += '<div class="form-group">';
-    html += '<label for="get_year_stats_movies" title="Includes server-wide movie statistics in your wrapped period.">Get server-wide movie statistics<br>';
+    html += '<label for="get_year_stats_movies" title="Includes server-wide movie statistics in your wrapped period.">Get server-wide movie statistics_<br>';
     html += '<input type="checkbox" class="form-control" id="get_year_stats_movies" ';
     if(get_year_stats_movies) {
         html += 'checked="' + get_year_stats_movies + '" ';
@@ -307,7 +316,7 @@ function set_tautulli_details(back) {
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="get_year_stats_shows" title="Includes server-wide show statistics in your wrapped period.">Get server-wide show statistics<br>';
+    html += '<label for="get_year_stats_shows" title="Includes server-wide show statistics in your wrapped period.">Get server-wide show statistics:<br>';
     html += '<input type="checkbox" class="form-control" id="get_year_stats_shows" ';
     if(get_year_stats_shows) {
         html += 'checked="' + get_year_stats_shows + '" ';
@@ -316,7 +325,7 @@ function set_tautulli_details(back) {
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="get_year_stats_music" title="Includes server-wide music statistics in your wrapped period.">Get server-wide music statistics<br>';
+    html += '<label for="get_year_stats_music" title="Includes server-wide music statistics in your wrapped period.">Get server-wide music statistics:<br>';
     html += '<input type="checkbox" class="form-control" id="get_year_stats_music" ';
     if(get_year_stats_music) {
         html += 'checked="' + get_year_stats_music + '" ';
@@ -325,7 +334,7 @@ function set_tautulli_details(back) {
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<label for="get_year_stats_leaderboard" title="Creates a user leaderboard based on the server-wide statistics in your wrapped period.">Get server-wide leaderboard rankings<br>';
+    html += '<label for="get_year_stats_leaderboard" title="Creates a user leaderboard based on the server-wide statistics in your wrapped period.">Get server-wide leaderboard rankings:<br>';
     html += '<input type="checkbox" class="form-control" id="get_year_stats_leaderboard" ';
     if(get_year_stats_leaderboard) {
         html += 'checked="' + get_year_stats_leaderboard + '" ';
@@ -336,7 +345,7 @@ function set_tautulli_details(back) {
     html += '<hr>';
 	
 	html += '<div class="form-group">';
-    html += '<label for="use_logs" title="Logs every API request into a log-file in the config folder. ID for Wrapped request included.">Log API calls<br>';
+    html += '<label for="use_logs" title="Logs every API request into a log-file in the config folder. ID for Wrapped request included.">Log API calls:<br>';
     html += '<input type="checkbox" class="form-control" id="use_logs" ';
     if(use_logs) {
         html += 'checked="' + use_logs + '" ';
@@ -346,7 +355,7 @@ function set_tautulli_details(back) {
 	
     html += '<div class="form-group">';
 	html += '<div class="warning">!<br>If your wrapped period is long and no results are cached, the wait time can be extensive. Using the cache feature and <a href="../caching" target="_blank">pre-caching</a> once is recommended.</div>';
-    html += '<label for="use_cache" title="Caches your results in cache.json for later use.">Cache results for later use<br>';
+    html += '<label for="use_cache" title="Caches your results in cache.json for later use.">Cache results for later use:<br>';
     html += '<input type="checkbox" class="form-control" id="use_cache" ';
     if(use_cache) {
         html += 'checked="' + use_cache + '" ';
@@ -355,7 +364,7 @@ function set_tautulli_details(back) {
     html += '</div>';
 
     html += '<div class="form-group" title="Clear the cache now to include the newest settings.">';
-    html += '<label for="clear_cache">Clear cache now<br>';
+    html += '<label for="clear_cache">Clear cache now:<br>';
     html += '<input type="checkbox" class="form-control" id="clear_cache" checked /></label>';
     html += '</div>';
 
@@ -428,6 +437,7 @@ function set_tautulli_last(back) {
             return;
         }
         stats_intro = document.getElementById('stats_intro').value;
+        create_share_links = document.getElementById('create_share_links').checked;
         get_user_movie_stats = document.getElementById('get_user_movie_stats').checked;
         get_user_show_stats = document.getElementById('get_user_show_stats').checked;
         get_user_show_buddy = document.getElementById('get_user_show_buddy').checked;

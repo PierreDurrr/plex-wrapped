@@ -20,6 +20,7 @@ function set_config() {
                             "wrapped_start" : Math.round(wrapped_start.getTime() / 1000),
                             "wrapped_end" : Math.round(wrapped_end.getTime() / 1000),
                             "stats_intro" : stats_intro,
+                            "create_share_links" : create_share_links,
                             "get_user_movie_stats" : get_user_movie_stats,
                             "get_user_show_stats" : get_user_show_stats,
                             "get_user_show_buddy" : get_user_show_buddy,

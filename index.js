@@ -31,7 +31,6 @@ function wrapped_link_actions(hash) {
             if(result.error) {
                 document.getElementById('stats').innerHTML = '<p>' + result.message + '</p><img id="bored_image" src="assets/img/bored.svg" style="width: 10em; height: 10em; display:block; margin: 1em auto;">';
             } else {
-                document.getElementById('stats').innerHTML = '<img id="loading_icon" src="assets/loading.gif" style="border-radius: 25px; background-color: white; padding: 1em;width: 4em; height: 4em; display:block; margin: auto;">';
                 results = result.data;
                 get_functions();
             }

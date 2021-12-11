@@ -41,6 +41,17 @@ if(!$config->is_configured()) {
 
 }
 
+// Check if link creation is allowed
+if(!$config->create_share_links) {
+
+	// Log use
+	$log->log_activity('create_link.php', 'unknown', 'Plex-Wrapped does not allow link creation in config.');
+
+    echo json_encode(array("error" => true, "message" => "Plex-Wrapped option for link creation not enabled."));
+    exit(0);
+
+}
+
 // Remove potential harmfull input
 $cookie = htmlspecialchars($data->cookie);
 $wrapped_data = $data->data;

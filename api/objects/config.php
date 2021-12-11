@@ -30,6 +30,7 @@ class Config {
     public $wrapped_start;
     public $wrapped_end;
     public $stats_intro;
+    public $create_share_links;
     public $get_user_movie_stats;
     public $get_user_show_stats;
     public $get_user_show_buddy;
@@ -79,6 +80,7 @@ class Config {
             $this->wrapped_start = $json->wrapped_start;
             $this->wrapped_end = $json->wrapped_end;
             $this->stats_intro = $json->stats_intro;
+            $this->create_share_links = $json->create_share_links;
             $this->get_user_movie_stats = $json->get_user_movie_stats;
             $this->get_user_show_stats = $json->get_user_show_stats;
             $this->get_user_show_buddy = $json->get_user_show_buddy;
@@ -145,6 +147,7 @@ class Config {
         $this->wrapped_start = $data->wrapped_start;
         $this->wrapped_end = $data->wrapped_end;
         $this->stats_intro = $data->stats_intro;
+        $this->create_share_links = $data->create_share_links;
         $this->get_user_movie_stats = $data->get_user_movie_stats;
         $this->get_user_show_stats = $data->get_user_show_stats;
         $this->get_user_show_buddy = $data->get_user_show_buddy;
