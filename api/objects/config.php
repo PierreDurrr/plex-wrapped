@@ -110,7 +110,7 @@ class Config {
 
     public function delete_config() {
 
-        // Check if link exists
+        // Check if config exists
         if (!file_exists($this->path)) {
             return false;
         }

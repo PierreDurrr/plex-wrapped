@@ -785,6 +785,9 @@ function load_outro() {
 
 function create_wrapped_link() {
 
+    document.getElementById("share_wrapped_button").disabled = true;
+    document.getElementById("share_wrapped_button").style.opacity = '0.5';
+
     wrapped_form = {
                         "cookie" : get_cookie('plex-wrapped'),
                         "data" : results
@@ -801,6 +804,8 @@ function create_wrapped_link() {
             alert("API response can't be parsed.");
             console.log('Error: ' + error);
             console.log(this.responseText);
+            document.getElementById("share_wrapped_button").disabled = false;
+            document.getElementById("share_wrapped_button").style.opacity = '1';
         }
         if(result.error) {
             alert(result.message);
@@ -808,6 +813,8 @@ function create_wrapped_link() {
         } else {
             document.getElementById('share_wrapped_results_url').innerHTML = '<span style="white-space: nowrap;">' + window.location.href.split('?')[0] + result.url + '</span>';
             document.getElementById('share_wrapped_results_div').style.display = 'inline-block';
+            document.getElementById("share_wrapped_button").disabled = false;
+            document.getElementById("share_wrapped_button").style.opacity = '1';
         }
     }
     };

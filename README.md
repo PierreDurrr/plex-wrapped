@@ -34,7 +34,7 @@ A website-based platform and API for collecting Plex user stats within a set tim
 - Beautiful illustrations from [FreeWebIllustrations](https://freewebillustrations.com)
 - Amazing statistics gathered using [Tautulli](https://github.com/Tautulli/Tautulli)
 - Wonderful loading icon from [icons8](https://icons8.com/preloaders/en/miscellaneous/hourglass)
-- Splendid web icons from [icons8](https://icons8.com/icon/set/popular/material-rounded--static)
+- Splendid web icons from [icons8](https://icons8.com/icon/set/popular/material-rounded)
 
 <br>
 <br>

@@ -132,8 +132,10 @@ function set_tautulli(back) {
     }
 
     var html = '<div class="form-group">';
-    html += '<button class="form-control btn" onclick="set_password(true)">Set admin password</button>';
+    html += '<button class="form-control btn" onclick="set_password(true)"><img src="../assets/config.svg" class="btn_logo"><p2>Change admin password</p2></button>';
     html += '</div>';
+
+    html += '<hr>';
 
     html += '<form id="tautulli_form" onsubmit="set_tautulli_details(false);return false">'
 
@@ -182,7 +184,7 @@ function set_tautulli(back) {
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<input style="background-color: lightgrey;" type="button" class="form-control btn" id="test_connection" onclick="test_tautulli_connection()" value="Test Tautulli connection" />';
+    html += '<button style="background-color: lightgrey;" type="button" class="form-control btn" id="test_connection" onclick="test_tautulli_connection()"><img src="../assets/synchronize.svg" class="btn_logo"><p2 id="test_tautulli_text">Test Tautulli connection</p2></button>';
     html += '</div>';
 
     html += '<div class="form-group">';
@@ -207,8 +209,10 @@ function set_tautulli_details(back) {
         ssl = document.getElementById('ssl').checked;
     }
     var html = '<div class="form-group">';
-    html += '<button class="form-control btn" onclick="set_tautulli(true, false)">Tautulli settings</button>';
+    html += '<button class="form-control btn" onclick="set_tautulli(true, false)"><img src="../assets/config.svg" class="btn_logo"><p2>Tautulli settings</p2></button>';
     html += '</div>';
+
+    html += '<hr>';
 
     html += '<form id="tautulli_details_form" onsubmit="set_tautulli_last(false);return false">'
 
@@ -369,7 +373,7 @@ function set_tautulli_details(back) {
     html += '</div>';
 
     html += '<div class="form-group">';
-    html += '<input type="submit" class="form-control btn" id="form_button" value="Finish" required />';
+    html += '<button type="submit" class="form-control btn" id="form_button"><img src="../assets/done.svg" class="btn_logo"><p2>Finish</p2></button>';
     html += '</div>';
 
     html += '</form>';
@@ -378,6 +382,9 @@ function set_tautulli_details(back) {
 }
 
 function test_tautulli_connection() {
+    document.getElementById("test_connection").disabled = true;
+    document.getElementById("test_connection").style.opacity = '0.5';
+
     var button = document.getElementById('test_connection');
     button.style.backgroundColor = 'lightgrey';
 
@@ -415,8 +422,12 @@ function test_tautulli_connection() {
             var result = JSON.parse(this.responseText);
             if(!result.error) {
                 button.style.backgroundColor = '#79A04F';
+                document.getElementById("test_connection").disabled = false;
+                document.getElementById("test_connection").style.opacity = '1';
             } else {
                 button.style.backgroundColor = '#F1909C';
+                document.getElementById("test_connection").disabled = false;
+                document.getElementById("test_connection").style.opacity = '1';
                 alert(result.message);
             }
         }
