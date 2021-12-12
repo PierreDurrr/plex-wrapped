@@ -203,3 +203,26 @@ function login_menu() {
     html += '</form>';
     document.getElementById("cache").innerHTML = html;
 }
+
+function get_plex_wrapped_version() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+
+            try {
+                var result= JSON.parse(this.responseText);
+            } catch(error) {
+                console.log('Failed to parse Plex-Wrapped version. Response: ' + this.responseText)
+            }
+            
+            if(!result.error) {
+                document.getElementById('github_link').innerHTML = 'GitHub (' + result.plex_wrapped_version + ')';
+            }
+
+        }
+    };
+    xhttp.withCredentials = true;
+    xhttp.open("post", "../api/get_plex_wrapped_version.php");
+    xhttp.send();
+    return;
+}

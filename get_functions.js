@@ -9,11 +9,11 @@ function get_functions() {
         if (this.readyState == 4 && this.status == 200) {
             var result = JSON.parse(this.responseText);
             if(result.error) {
-                if(result.message == 'Plex Wrapped is not configured.') {
-                    document.getElementById('results_error').innerHTML = '<a href="./admin"><p style="color:inherit; text-shadow: none;">' + result.message + '</p></a>';
-                } else {
-                    document.getElementById('results_error').innerHTML = '<p style="color:inherit; text-shadow: none;">' + result.message + '</p>';
-                }
+                document.getElementById("search_wrapped_button").disabled = false;
+                document.getElementById("search_wrapped_button").style.opacity = '1';
+                document.getElementById("plex_signout_button").disabled = false;
+                document.getElementById("plex_signout_button").style.opacity = '1';
+                document.getElementById('results_error').innerHTML = result.message;
             } else {
                 functions = result;
                 if(!link_mode) {

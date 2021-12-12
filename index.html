@@ -60,7 +60,7 @@
                         <form id='search_wrapped_form' class='form' onsubmit='return false' action="" method="post" style="display: none;">
 
                             <div class="form-group" id='search_wrapped_div'>
-                                <button class='form-control btn' name="plex_login_button" id="search_wrapped_button" style='opacity: 0.5;' disabled>
+                                <button class='form-control btn' name="search_wrapped_button" id="search_wrapped_button" style='opacity: 0.5;' disabled>
                                     <img src='assets/done.svg' class='btn_logo'>
                                     <p2 id='plex_login_button_text'>Plex Wrapped</p2>
                                 </button>
@@ -132,7 +132,7 @@
     <a style="color: white; font-weight: normal; font-size: 0.75em; text-decoration: none;" href="./">Wrapped</a> |
     <a style="color: white; font-weight: normal; font-size: 0.75em; text-decoration: none;" href="./admin">Admin</a> |
     <a style="color: white; font-weight: normal; font-size: 0.75em; text-decoration: none;" href="./caching">Caching</a> |
-    <a style="color: white; font-weight: normal; font-size: 0.75em; text-decoration: none;" href="https://github.com/aunefyren/plex-wrapped" target="_blank">GitHub (v2.1.0)</a>
+    <a style="color: white; font-weight: normal; font-size: 0.75em; text-decoration: none;" id="github_link" href="https://github.com/aunefyren/plex-wrapped" target="_blank">GitHub</a>
 </div>
 
 </div>
@@ -152,6 +152,8 @@
         var url = new URL(url_string);
         var hash = url.searchParams.get("hash");
         var close_me = url.searchParams.get("close_me");
+
+        get_plex_wrapped_version();
         
         if(close_me !== null) {
             window.close();

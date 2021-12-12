@@ -19,7 +19,8 @@ $data = json_decode(file_get_contents("php://input"));
 $log->log_activity('get_functions.php', 'unknown', 'Retrieved Plex-Wrapped functions.');
 
 // Create JSON from functions
-$functions_json = array("get_user_movie_stats" => $config->get_user_movie_stats,
+$functions_json = array("plex_wrapped_version" => $config->plex_wrapped_version,
+						"get_user_movie_stats" => $config->get_user_movie_stats,
 						"get_user_show_stats" => $config->get_user_show_stats,
 						"get_user_show_buddy" => $config->get_user_show_buddy,
 						"get_user_music_stats" => $config->get_user_music_stats,

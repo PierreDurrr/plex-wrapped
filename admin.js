@@ -307,7 +307,7 @@ function set_tautulli_details(back) {
     html += '<hr>';
 
     html += '<div class="form-group">';
-    html += '<label for="get_year_stats_movies" title="Includes server-wide movie statistics in your wrapped period.">Get server-wide movie statistics_<br>';
+    html += '<label for="get_year_stats_movies" title="Includes server-wide movie statistics in your wrapped period.">Get server-wide movie statistics:<br>';
     html += '<input type="checkbox" class="form-control" id="get_year_stats_movies" ';
     if(get_year_stats_movies) {
         html += 'checked="' + get_year_stats_movies + '" ';
@@ -451,4 +451,27 @@ function set_tautulli_last(back) {
 
         set_config();
     }
+}
+
+function get_plex_wrapped_version() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+
+            try {
+                var result= JSON.parse(this.responseText);
+            } catch(error) {
+                console.log('Failed to parse Plex-Wrapped version. Response: ' + this.responseText)
+            }
+            
+            if(!result.error) {
+                document.getElementById('github_link').innerHTML = 'GitHub (' + result.plex_wrapped_version + ')';
+            }
+
+        }
+    };
+    xhttp.withCredentials = true;
+    xhttp.open("post", "../api/get_plex_wrapped_version.php");
+    xhttp.send();
+    return;
 }

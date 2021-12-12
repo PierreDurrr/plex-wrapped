@@ -54,6 +54,10 @@ function sign_out() {
 
 $(document).on('submit', '#search_wrapped_form', function(){
     
+    document.getElementById("search_wrapped_button").disabled = true;
+    document.getElementById("search_wrapped_button").style.opacity = '0.5';
+    document.getElementById("plex_signout_button").disabled = true;
+    document.getElementById("plex_signout_button").style.opacity = '0.5';
     document.getElementById('results_error').innerHTML = "";
     get_functions();
 
@@ -207,5 +211,28 @@ function validate_cookie(cookie) {
     xhttp.withCredentials = true;
     xhttp.open("post", "api/validate_login_cookie.php");
     xhttp.send(json_cookie);
+    return;
+}
+
+function get_plex_wrapped_version() {
+    var xhttp = new XMLHttpRequest();
+    xhttp.onreadystatechange = function() {
+        if (this.readyState == 4 && this.status == 200) {
+
+            try {
+                var result= JSON.parse(this.responseText);
+            } catch(error) {
+                console.log('Failed to parse Plex-Wrapped version. Response: ' + this.responseText)
+            }
+            
+            if(!result.error) {
+                document.getElementById('github_link').innerHTML = 'GitHub (' + result.plex_wrapped_version + ')';
+            }
+
+        }
+    };
+    xhttp.withCredentials = true;
+    xhttp.open("post", "api/get_plex_wrapped_version.php");
+    xhttp.send();
     return;
 }

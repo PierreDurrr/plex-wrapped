@@ -17,14 +17,22 @@ function get_stats() {
 			try {
 				var result= JSON.parse(this.responseText);
 			} catch(error) {
-				document.getElementById('results_error').innerHTML = '<p style="color:inherit; text-shadow: none;">' + "API response can't be parsed." + '</p>';
 				console.log('Error: ' + error);
 				console.log(this.responseText);
 				loading_icon.style.display = "none";
+                document.getElementById("search_wrapped_button").disabled = false;
+                document.getElementById("search_wrapped_button").style.opacity = '1';
+                document.getElementById("plex_signout_button").disabled = false;
+                document.getElementById("plex_signout_button").style.opacity = '1';
+                document.getElementById('results_error').innerHTML = "API response can't be parsed.";
 			}
             if(result.error) {
                 loading_icon.style.display = "none";
-                document.getElementById('results_error').innerHTML = '<p style="color:inherit; text-shadow: none;">' + result.message + '</p>';
+                document.getElementById("search_wrapped_button").disabled = false;
+                document.getElementById("search_wrapped_button").style.opacity = '1';
+                document.getElementById("plex_signout_button").disabled = false;
+                document.getElementById("plex_signout_button").style.opacity = '1';
+                document.getElementById('results_error').innerHTML = result.message;
 
             } else {    
                 results = result;
@@ -41,7 +49,10 @@ function get_stats() {
 
 function load_page(data){
 
+    // Remove snow
     document.getElementById('snowflakes').style.display = 'none';
+    
+    // Enable changing background colors JS
     loaded = true;
 
     if(results.error) {
@@ -51,6 +62,7 @@ function load_page(data){
         return
     }
 
+    // Find HTML elements and hide them
     var search_box = document.getElementById("search_input");
     var login_content = document.getElementById("login_content");
     var footer = document.getElementById("footer");
@@ -81,6 +93,7 @@ function load_page(data){
         load_users();
     }
 
+    // Load the outro
     load_outro();
 }
 

@@ -52,7 +52,7 @@
     <a style="color: white; font-weight: normal; font-size: 0.75em; text-decoration: none;" href="../">Wrapped</a> |
     <a style="color: white; font-weight: normal; font-size: 0.75em; text-decoration: none;" href="../admin">Admin</a> |
     <a style="color: white; font-weight: normal; font-size: 0.75em; text-decoration: none;" href="../caching">Caching</a> |
-    <a style="color: white; font-weight: normal; font-size: 0.75em; text-decoration: none;" href="https://github.com/aunefyren/plex-wrapped" target="_blank">GitHub (v2.1.0)</a>
+    <a style="color: white; font-weight: normal; font-size: 0.75em; text-decoration: none;" id="github_link" href="https://github.com/aunefyren/plex-wrapped" target="_blank">GitHub</a>
 </div>
 
 <div class="content" id="search_results">
@@ -63,6 +63,8 @@
 var root = "../";
 
 var first_time = false;
+
+var plex_wrapped_version = "";
 
 var tautulli_apikey = "";
 var tautulli_ip = "";
@@ -109,6 +111,8 @@ var client_id = "";
 var plex_wrapped_root = "";
 
 $(document).ready(function() {
+
+    get_plex_wrapped_version();
 
     get_config_initial("../");
 

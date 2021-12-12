@@ -19,6 +19,7 @@ class Config {
     public $username;
 
     // Plex-Wrapped config
+    public $plex_wrapped_version = 'v2.1.0';
     public $timezone;
     public $use_cache;
     public $use_logs;
@@ -89,7 +90,15 @@ class Config {
             $this->get_year_stats_shows = $json->get_year_stats_shows;
             $this->get_year_stats_music = $json->get_year_stats_music;
             $this->get_year_stats_leaderboard = $json->get_year_stats_leaderboard;
-
+            
+            if($this->plex_wrapped_version !== $json->plex_wrapped_version) {
+                if(!$this->delete_config()) {
+                    echo json_encode(array(
+                                            "message" => "Plex Wrapped configuration is made with version: " . $json->plex_wrapped_version . ", but you are using: " . $this->plex_wrapped_version . ". Delete config.json and re-configure Plex Wrapped again.",
+                                            "error" => true));
+                    exit();
+                }
+            }
         }
 
         // If token encrypter is not set, generate one
@@ -97,6 +106,23 @@ class Config {
             $this->token_encrypter = md5(rand(0,1000));
         }
 
+    }
+
+    public function delete_config() {
+
+        // Check if link exists
+        if (!file_exists($this->path)) {
+            return false;
+        }
+        
+        if (!unlink($this->path)) { 
+            return false;
+        } 
+        else { 
+            return true;
+        }
+
+        return false;
     }
 
     public function verify_wrapped_admin($username, $password) {
